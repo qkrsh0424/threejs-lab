@@ -1,0 +1,22 @@
+{
+  "name": "threejs-sam1",
+  "version": "1.0.0",
+  "description": "threejs-lab git",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qkrsh0424/threejs-lab.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qkrsh0424/threejs-lab/issues"
+  },
+  "homepage": "https://github.com/qkrsh0424/threejs-lab#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
