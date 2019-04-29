@@ -11,7 +11,10 @@
 <body>
 <script src="js/three.min.js"></script>
 <script src="js/FirstPersonControls.js"></script>
+<script src="js/socket.io.js"></script>
+<script src="js/GLTFLoader.js"></script>
 <script>
+    const socket = io('localhost:3000');
     // Our Javascript will go here.
     const scene = new THREE.Scene();
 
@@ -175,13 +178,38 @@
 
     const fpc = new FirstPersonControls(camera);
     fpc.connect();
-    
+
     scene.add(fpc.yawObject);
 
     let clock = new THREE.Clock();
 
+
+    let playerMap = new Map();
+    socket.on('player', data => {
+        if (playerMap.has(data.socketid)) {
+            let model = playerMap.get(data.socketid);
+            model.position.set(data.position.x, data.position.y, data.position.z);
+            model.rotation.set(data.rotation._x, data.rotation._y + Math.PI / 2, data.rotation._z);
+        } else {
+            const loader = new THREE.GLTFLoader();
+            loader.load("models/duck.glb", (mesh) => {
+                mesh.scene.scale.set(10, 10, 10);
+                scene.add(mesh.scene);
+                playerMap.set(data.socketid, mesh.scene);
+            });
+        }
+    });
+    socket.on('offline', data => {
+        if (playerMap.has(data.socketid)) {
+            scene.remove(playerMap.get(data.socketid));
+            playerMap.delete(data.socketid)
+        }
+    });
+
+
     function render() {
         fpc.update(clock.getDelta());
+        socket.emit('player', {position: fpc.yawObject.position, rotation: fpc.yawObject.rotation});
         requestAnimationFrame(render);
         renderer.render(scene, camera);
     }
